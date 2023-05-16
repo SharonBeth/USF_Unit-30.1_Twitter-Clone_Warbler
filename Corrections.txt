@@ -1,0 +1,102 @@
+1. Input: 
+	python seed.py  (Trying to run the seed file to get started and received an error)
+   Error:	
+	In Ubuntu/(venv-shell) error for no flask-debugtoolbar... not module named
+
+   Resolution: 
+	pip install flask_debugtoolbar
+
+2. Input: 
+	python seed.py (Trying to run the seed file to get started and received an error)
+   Error:
+	Exception: Install 'email_validator' for email validation support.
+   Resolution:
+	pip install email_validator
+
+3. Input:
+	python seed.py (Trying to run the seed file to get started and received an error)
+   Error: 
+	ModuleNotFoundError: No module named 'flask_bcrypt'
+   Resolution:
+	pip install flask_bcrypt
+
+4. Input:
+	python seed.py
+   Error:
+	/home/sharonfahler/usf/Unit-30_Warbler_Assessment/warbler/seed.py:12: SAWarning: relationship 'User.following' will copy column users.id to column follows.user_following_id, which conflicts with relationship(s): 'User.followers' (copies users.id to follows.user_following_id). If this is not the intention, consider if these relationships should be linked with back_populates, or if viewonly=True should be applied to one or more if they are read-only. For the less common case that foreign key constraints are partially overlapping, the orm.foreign() annotation can be used to isolate the columns that should be written towards.   To silence this warning, add the parameter 'overlaps="followers"' to the 'User.following' relationship. (Background on this error at: https://sqlalche.me/e/20/qzyx) (This warning originated from the `configure_mappers()` process, which was invoked automatically in response to a user-initiated operation.)
+  db.session.bulk_insert_mappings(User, DictReader(users))
+/home/sharonfahler/usf/Unit-30_Warbler_Assessment/warbler/seed.py:12: SAWarning: relationship 'User.following' will copy column users.id to column follows.user_being_followed_id, which conflicts with relationship(s): 'User.followers' (copies users.id to follows.user_being_followed_id). If this is not the intention, consider if these relationships should be linked with back_populates, or if viewonly=True should be applied to one or more if they are read-only. For the less common case that foreign key constraints are partially overlapping, the orm.foreign() annotation can be used to isolate the columns that should be written towards.   To silence this warning, add the parameter 'overlaps="followers"' to the 'User.following' relationship. (Background on this error at: https://sqlalche.me/e/20/qzyx) (This warning originated from the `configure_mappers()` process, which was invoked automatically in response to a user-initiated operation.)
+  db.session.bulk_insert_mappings(User, DictReader(users))
+/home/sharonfahler/usf/Unit-30_Warbler_Assessment/warbler/seed.py:12: SAWarning: relationship 'Message.user' will copy column users.id to column messages.user_id, which conflicts with relationship(s): 'User.messages' (copies users.id to messages.user_id). If this is not the intention, consider if these relationships should be linked with back_populates, or if viewonly=True should be applied to one or more if they are read-only. For the less common case that foreign key constraints are partially overlapping, the orm.foreign() annotation can be used to isolate the columns that should be written towards.   To silence this warning, add the parameter 'overlaps="messages"' to the 'Message.user' relationship. (Background on this error at: https://sqlalche.me/e/20/qzyx) (This warning originated from the `configure_mappers()` process, which was invoked automatically in response to a user-initiated operation.)
+  db.session.bulk_insert_mappings(User, DictReader(users))
+   Resolution:
+	Did not resolve, tried to run "flask run" server .. it worked, so I moved on for now.
+
+
+
+5. Input:
+	In Ubuntu-Shell: python -m pdb app.py
+
+   Return Line:
+	> /home/sharonfahler/usf/Unit-30_Warbler_Assessment/warbler/app.py(1)<module>()
+        -> import os
+        (Pdb)
+   Resolution:
+
+It is unclear what I was supposed to correct with this, or was I supposed to just play around????
+
+6. Part I: Step 2
+
+	To the Logout, I added the above function to run a pre-written loggout function, then after that in this same route, added "flash" to acknoledge the log-out happened.
+
+7. Part I: Step 3
+	Add location, bio, & header image with these steps: 
+	1. Tested a different image in the html location that the header_image should have been. This 'correctly. An image would show up.
+	2. On the Sign-Up page on UserInterface, the form did not ask for a header image, I added this by making the following changes:
+		a. In forms.py/class UserAddForm added ==> header_image_url line
+		b. Then, in app.py/route('/signup')/if, try added "header_image_url line"
+		c. models.py/class User/@classmethod-signup/Added to user ==> header_image_url to "def signup (argument) & to user =User(at the end)
+	3. Bio & Location:
+		a. details.html/Changed bio here==> to user.bio
+		b. details.html/changed location to user.location
+
+	Return:
+		a.(user.bio)=returned location >>>>>>>> RED FLAG, still needs resolved.
+		b.(user.location)=returned location, this was good, completed.
+
+	4. Bio: In models.py/class User put the column names in the same order as the @classmethod/signup/user order (they were not the same), I dont think this was the problem, but uniformity is always good evne if this did not change it.
+
+	Return: this did nto change the issue with the bio coming through as teh bio.
+
+	
+Missed some because my computer turned off without saving this
+
+8. Part I: Step 4
+	1. In app.py/@route ('/users/<user_id>/profile')? Added almost all of the code. Goal was to confirm the user was in teh session/or send them back to home page ('/'), then show form to update profile info, validate, update, save, and retested.
+	2. Made changes on edit.html.
+	3. Tested several times and finally got it.
+
+9. Part I: Step 5
+I think I lost some data when My computer shut off without saving.
+
+10. Part I: Step 6
+	1. Had to have help, added in app.py route ('/') that messages needed to be filtered by who the user was following, plus themselves, I knew were to add the filter, and what the filter needed to be in theory, but did not know how to write it.
+
+11. Part I: Step 7 
+	How is the logged in user being kept track of?
+		The logged in user is added at the "before_request" function, then when they sign in, the session[CURR_USER_KEY] is equal to user.id. 
+	What is Flask’s g object?
+		g.user is equal to user.id once the user signs in.
+	What is the purpose of add_user_to_g?
+		add_user_to_g is a way to confirm if someone is signed in, and also to clear the session if they are not signed in.
+	What does @app.before_request mean?
+		This is a decorator that means to do the function before all route functions. I beleive for every action, so for every route that is requested?? This would happend first.
+
+
+
+
+
+
+*****************************************************************************
+***************Part III: 
+	

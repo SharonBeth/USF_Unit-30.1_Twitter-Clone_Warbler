@@ -1,0 +1,175 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "origin"]
+	url = https://github.com/SharonBeth/USF_Unit-27.2_Blogly-Part-II.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "main"]
+	remote = origin
+	merge = refs/heads/main
+
+
+<!-- {% for msg.id in likes %} -->
+<!-- <i class="fa-solid fa-heart"></i> -->
+<!-- {% else msg.id in likes %} -->
+<!-- <i class="fa-regular fa-heart"></i> -->
+<!-- {% endif %} -->
+
+
+             <!-- {{'btn-primary' if msg.id in likes else 'btn-secondary'}}"> -->
+             <!-- {% if msg.id in msg.user.likes %} -->
+             <i class="fa-solid fa-heart"></i>
+             <!-- {% else %} -->
+             <!-- <i class="fa-regular fa-heart"></i> -->
+             <!-- {% endif %} -->
+             <!--  -->
+
+From home.html, when I could only get one message to pop up:
+<!-- <div class="col-lg-6 col-md-8 col-sm-12"> -->
+<!-- <ul class="list-group" id="messages"> -->
+<!-- {% for msg in messages %} -->
+<!-- <li class="list-group-item"> -->
+<!-- <a href="/messages/{{ msg.id  }}" class="message-link"> -->
+<!-- <a href="/users/{{ msg.user.id }}"> -->
+<!-- <img src="{{ msg.user.image_url }}" alt="" class="timeline-image"> -->
+<!-- </a> -->
+<!-- <div class="message-area"> -->
+<!-- <a href="/users/{{ msg.user.id }}">@{{ msg.user.username }}</a> -->
+<!-- <span class="text-muted">{{ msg.timestamp.strftime('%d %B %Y') }}</span> -->
+<!-- <p>{{ msg.text }}</p> -->
+<!-- </div> -->
+<!-- <form method="POST" action="/messages/add_like/{{ msg.id }}" id="messages-form"> -->
+<!-- <button class=" -->
+<!-- btn  -->
+<!-- btn-sm"> -->
+<!-- <i class="fa-solid fa-heart"></i> -->
+<!-- {% else %} -->
+<!-- <i class="fa-regular fa-heart"></i> -->
+<!--  -->
+<!-- </button> -->
+<!-- </form> -->
+<!-- </li> -->
+<!--  -->
+<!-- <p>{{user.likes}} {{msg.id}}{{user.followers}} {{user.following}} {{likes}}{{msg.testing}}</p> -->
+<!--  -->
+<!-- </ul> -->
+<!--  -->
+<!-- </div> -->
+<!-- {% endfor %} -->
+<!--  -->
+<!--  -->
+<!-- </div> -->
+<!-- {% endblock %} -->
+<!--  -->
+<!-- <i class={{"fa-solid fa-heart" if msg in likes else "something else?" }}></i> -->
+
+Testing Jinja for Relationships on 'home.html' page for {{user.likes}}:
+
+1. 	Condition #1:
+		On home.html=> {{user.likes}}
+		On models.py/class User=> likes = db.relationship(
+						'Message',
+						secondary="likes"
+						primaryjoin=(Likes.user_id == id)
+
+	Result: [<Message 222>, <Message 310>]
+
+2. 	Condition #2:
+		On home.html=> {{user.likes}}
+		On models.py/class User=> likes = db.relationship(
+						'User',
+						secondary="likes"
+						primaryjoin=(Likes.user_id == id)
+
+	Result:	[<User #345: townhouse, townhouse@gmail.com>]
+
+3. 	Condition #3:
+		On home.html=> {{user.likes}}
+		On models.py/class User=> likes = db.relationship(
+						'User',
+						secondary="likes"
+						primaryjoin=(Likes.message_id == id)
+	
+	Result: []   (returned empty)
+
+4. 	Condition #4: 
+		On On home.html=> {{user.likes}}
+		On models.py/class User=> likes = db.relationship(
+						'Message',
+						secondary="likes"
+						primaryjoin=(Likes.message_id == id)
+	Return: []   (returned empty)
+
+5. 	Condition #5:
+		On home.html=> {{user.likes}} & {{msg.id}}
+		On models.py/class Message=> New function/method added
+			def __repr__(self):
+    				return f"<Message {self.id}>"
+	
+	Return: [<Message 222>, <Message 310>, <Message 614>] 614
+
+6.  	Condition #6:
+		On home.html=> {{user.likes}} & {{msg.id.__repr__}}
+		On models.py/class Message=> New function/method added
+			def __repr__(self):
+    				return f"<Message {self.id}>"
+	
+	Return: [<Message 222>, <Message 310>, <Message 614>] <method-wrapper '__repr__' of int object at 0x7fa06c292bb0>
+
+7.  	Condition #7:
+		On home.html=> {{user.likes}} {{msg.id.__repr__}}{{user.followers}} {{user.following}}
+		On models.py/class Message=> New function/method added
+			def __repr__(self):
+    				return f"<Message {self.id}>"
+	
+	Return: [<Message 222>, <Message 310>, <Message 614>] <method-wrapper '__repr__' of int object at 0x7fc5924e2cf0>[] []
+
+8.  	Condition #8:
+		On home.html=> {{user.likes}} {{msg.id.__repr__}}{{user.followers}} {{user.following}}
+		On models.py/class Message=> New function/method added
+			def __repr__(self):
+    				return f"<Message {self.id}>"
+		On On models.py/class User=> likes = db.relationship(
+										(*Completely Removed)
+						secondary="likes"
+						primaryjoin=(Likes.message_id == id)
+	
+	Return: Error message in Ubuntu server return: 
+		Python typing annotation is required for attribute "User.likes" when primary argument(s) for "Relationship" construct are None or not present.
+
+9.  	Condition #9:
+		On home.html=> {{user.likes}} {{msg.id.__repr__}}{{user.followers}} {{user.following}}
+			 Also ...  {% if "<Message {{msg.id}}>" in user.likes %}
+		On On models.py/class User=> likes = db.relationship(
+						'Messages'	
+						secondary="likes"
+						primaryjoin=(Likes.message_id == id)
+		
+	
+	Return: Error message in Ubuntu server return:
+
+10.  	Condition #10:
+		On home.html=> {{user.likes}} {{msg.id.__repr__}}{{user.followers}} {{user.following}}{{likes}}{{msg.testing}}
+			 Also ...  {% if "<Message {{msg.id}}>" in user.likes %}
+		On On models.py/class testing = db.relationship(
+                        'Message',
+                        secondary="likes",
+                        primaryjoin=(Likes.message_id == id)
+			)
+
+
+Several attempts that did not work.
+
+11.  	Condition #11:
+		On app.py => I kept trying to change the message Id of the individual value to match the list, instead of trying to change the long list of likes to only integers so that the list could be compared to the message id of an integer.
+
+		On home.html=> {{msg.id}} {{likes}}
+		On app.py=> liked_msg_ids = [msg.id for msg in g.user.likes] 
+	 
+		
+	
+
+
+  
