@@ -167,8 +167,27 @@ Several attempts that did not work.
 
 		On home.html=> {{msg.id}} {{likes}}
 		On app.py=> liked_msg_ids = [msg.id for msg in g.user.likes] 
+
+12. 	Condition #12
 	 
-		
+
+**** Coding that is getting picked up by in the errors even though it is supposed tobe noted out:
+
+Was in home.html, Code lines 56, 57
+              <!-- {% elif %} -->
+              <!-- <i class="fa-regular fa-heart"></i> -->
+
+13.  Condition #13
+{% if msg in g.user.likes %}
+<i class="fa fa-thumbs-up"></i>
+{% else %}
+<i class="fa-regular fa-heart"></i>
+{% endif %}
+
+14
+ "Message",
+ secondary="likes", 
+ primaryjoin=(Likes.user_id == id)
 	
 
 

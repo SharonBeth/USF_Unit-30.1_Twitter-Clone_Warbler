@@ -98,6 +98,7 @@ class User(db.Model):
     
 
     messages = db.relationship('Message')
+    # This is an example of one-to-Many relationship
 
     followers = db.relationship(
         "User",
@@ -105,6 +106,7 @@ class User(db.Model):
         primaryjoin=(Follows.user_being_followed_id == id),
         secondaryjoin=(Follows.user_following_id == id)
     )
+    # followers is the one 
 
     following = db.relationship(
         "User",
@@ -119,8 +121,8 @@ class User(db.Model):
         # primaryjoin=(Likes.message_id == id)
     # )
         "Message",
-        secondary="likes", 
-        primaryjoin=(Likes.user_id == id)
+        secondary="likes",
+        primaryjoin=(Likes.message_id == id)
     )
 
     # likes = db.relationship(
