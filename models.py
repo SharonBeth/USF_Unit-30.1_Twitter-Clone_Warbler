@@ -106,7 +106,6 @@ class User(db.Model):
         primaryjoin=(Follows.user_being_followed_id == id),
         secondaryjoin=(Follows.user_following_id == id)
     )
-    # followers is the one 
 
     following = db.relationship(
         "User",
@@ -114,23 +113,14 @@ class User(db.Model):
         primaryjoin=(Follows.user_following_id == id),
         secondaryjoin=(Follows.user_being_followed_id == id)
     )
-    # ********Made this change, very unsure about it
+
     likes = db.relationship(
-        # 'Message',
-        # secondary="likes", 
-        # primaryjoin=(Likes.message_id == id)
-    # )
-        "Message",
-        secondary="likes",
-        primaryjoin=(Likes.message_id == id)
+        'Message',
+        secondary="likes"
     )
 
-    # likes = db.relationship(
-        # 'Like', backref='user', passive_deletes=True
-    # )
-
-    # def __repr__(self):
-        # return f"<User #{self.id}: {self.username}, {self.email}>"
+    def __repr__(self):
+        return f"<User #{self.id}: {self.username}, {self.email}>"
 
     def is_followed_by(self, other_user):
         """Is this user followed by `other_user`?"""

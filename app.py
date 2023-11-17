@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template, request, flash, redirect, session, g
+from flask import Flask, render_template, request, flash, redirect, session, g, abort
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
@@ -274,7 +274,7 @@ def add_like(message_id):
     liked_message = Message.query.get_or_404(message_id)
     print(liked_message.user_id)
     if liked_message.user_id == g.user.id:
-        print("made it to likes")
+        return abort(403)
     user_likes = g.user.likes
     if liked_message in user_likes:
         g.user.likes = [like for like in user_likes if like != liked_message]
