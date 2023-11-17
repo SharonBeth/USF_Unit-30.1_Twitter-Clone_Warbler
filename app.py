@@ -7,6 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from forms import UserAddForm, LoginForm, MessageForm
 from models import db, connect_db, User, Message
 
+
 CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
@@ -147,16 +148,20 @@ def list_users():
 def users_show(user_id):
     """Show user profile."""
 
-    user = User.query.get_or_404(user_id)
+    
 
     # snagging messages in order from the database;
     # user.messages won't be in order by default
-    messages = (Message
-                .query
-                .filter(Message.user_id == user_id)
-                .order_by(Message.timestamp.desc())
-                .limit(100)
-                .all())
+    if g.user:
+
+        following_ids = [f.id for f in g.user.following]
+        messages = (Message
+                    .query
+                    .filter(Message.user_id.in_(following_ids))
+                    .order_by(Message.timestamp.desc())
+                    .limit(100)
+                    .all())
+        user = User.query.get_or_404(user_id)
     return render_template('users/show.html', user=user, messages=messages)
 
 
@@ -232,12 +237,17 @@ def profile(user_id):
         user.header_image_url = form.header_image_url.data
         user.location = form.location.data
         user.bio = form.bio.data
-
-        db.session.commit()
-
-        return redirect(f"/users/{user.id}")
-
         
+        if User.authenticate(user.username,
+                            form.password.data):
+        
+            db.session.commit()
+
+            return redirect(f"/users/{user.id}")
+        else:
+            flash("Invalid Credentials")
+            return redirect("/")
+
     return render_template('users/edit.html', user=user, form=form)
 
 @app.route('/users/delete', methods=["POST"])
@@ -262,8 +272,9 @@ def add_like(message_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
     liked_message = Message.query.get_or_404(message_id)
+    print(liked_message.user_id)
     if liked_message.user_id == g.user.id:
-        return abort(403)
+        print("made it to likes")
     user_likes = g.user.likes
     if liked_message in user_likes:
         g.user.likes = [like for like in user_likes if like != liked_message]
@@ -290,6 +301,7 @@ def messages_add():
 
     Show form if GET. If valid, update message and redirect to user page.
     """
+    # user = User.query.get(g.user.id)
 
     if not g.user:
         flash("Access unauthorized.", "danger")
@@ -344,9 +356,10 @@ def homepage():
 
     if g.user:
         following_ids = [f.id for f in g.user.following] + [g.user.id]
+
         messages =  (Message
                     .query
-                    # .filter(Message.user_id.in_(following_ids))
+                    .filter(Message.user_id.in_(following_ids))
                     .order_by(Message.timestamp.desc())
                     .limit(100)
                     .all())

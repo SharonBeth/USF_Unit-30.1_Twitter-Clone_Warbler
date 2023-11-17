@@ -129,8 +129,8 @@ class User(db.Model):
         # 'Like', backref='user', passive_deletes=True
     # )
 
-    def __repr__(self):
-        return f"<User #{self.id}: {self.username}, {self.email}>"
+    # def __repr__(self):
+        # return f"<User #{self.id}: {self.username}, {self.email}>"
 
     def is_followed_by(self, other_user):
         """Is this user followed by `other_user`?"""
